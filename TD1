@@ -1,0 +1,145 @@
+1.1
+===
+
+FIFO car B1 -> B2 et émis par P1, et les processus P2 et P3 délivrent d1 et
+d2 dans cet ordre.
+Non causal car b1 -> d1 -> b3 => b1 -> b3. Or P3 délivre d'abord d1 puis 
+d3.
+Non total car les processus ne délivrent pas tous d3, d2 et d1 dans le même 
+ordre.
+
+2.1
+===
+
+D'après l'énnoncé on a :
+    b1 -> d1 -> b3 -> d3
+    b2 -> d1 -> b3 -> d3
+    b2 -> d2
+    b2 -> b3
+    b1 -> b3
+
+En diffusion FIFO :
+    P1 :
+        d1 d2 d3
+        d2 d1 d3
+        d2 d3 d1
+    P2 :
+        d1 d2 d3; d2 d1 d3
+ 
+En CBCAST :
+    P1 :
+        d1 d2 d3  
+        d2 d1 d3  
+    P2 :
+        idem
+
+3.1
+===
+
+Plusieurs serveurs permet une meilleure tolérance aux pannes, mais plus cher en
+coût et nécessite la gestion des réplications.
+
+3.2
+===
+
+On a :
+    a*3 || a+10
+    a*3 -> a*2
+    a+10 -> a*2
+
+CBCAST
+    a. ((a+10)*3)*2 = 60
+    b. ((a*3)+10)*2 = 20
+    Les serveurs n'auront pas forcément la même valeurs dans ce cas de 
+    diffusion.
+
+ABCAST
+    On a 6 possibilités (toutes les combinaisons des opérations possibles). Les
+    serveurs auront la même valeur: 10, 20, 30 ou 60.
+
+5.1
+===
+
+Détecteur parfait :
+    Complétude forte : un processus en panne finira par être suspecté.
+    Justesse force : aucun processus correct ne sera jamais suspecté.
+    Requiert un système synchrone.
+
+
+Dans le processus P:
+
+    correct = π
+    from [] = vide
+
+    Real_Broadcast
+        send <m> to ∀i ∈ correct and i ≠ P;
+    
+    upon new <m> from q
+        if m ∉ from [q]
+            from [q] ∪= {m};
+        if q ∉ correct
+            send <m> to ∀i ∈ correct and i ≠ P;
+        
+    upon <crash, q>
+        correct = correct \ {q}
+        ∀m from [q]
+            send <m> to ∀i ∈ correct and i ≠ P;
+
+5.2
+===
+
+x est le nombre de message reçus par q avant la panne de p.
+
+k processus fautifs : | correct | = π - k
+x * (N - 1 - k) messages envoyés (il envoie aux corrects, mais pas à lui-même)
+lors de la détection de la faute de p.
+Soit (N - K) * (N - 1 - k) * x.
+
+5.3
+===
+
+L'algo vu en cours chaque processus envoie (N-1) * x messages. 
+
+5.4
+===
+
+P a besoin d'un système synchrone alors que <>P partiellement synchrone.
+
+Avec <>P, l'algorithme fonctionnera grâce à la complétude forte, mais la 
+justesse$ faible peut amener à des envois de messages inutiles.
+
+6.1
+===
+
+Non car si un processus émetteur tombe en panne, un canal fiable n'assure pas
+que le message envoyé soit reçu par les autres processus.
+
+6.2
+===
+
+correct = π
+pend = delv = {}
+ack[] = {}
+
+Unif_real_broadcast(m)
+    pend ∪= {m}
+    estampiller m avec send(m) et seg#(m)
+    envoyer <m> à tous les processus correct
+
+upon recv <m> from q
+    ack[m] ∪= {q}
+    if (m ∉ pend and m ∉ delv)
+        pend ∪= {m}
+        envoyer m à tous les processus correct sauf p
+    if (correct ⊆ ack[m])
+        delv ∪= {m}
+        pend = pend \ {m}
+        Unif_real_broadcast(m)
+
+upon <crash, q>
+    correct = correct \ {q}
+    for all m ∈ pend
+        if ((m ∉ delv) and correct ⊆ ack[m])
+            delv ∪= {m}
+            pend = pend \ {m}
+            Unif_real_broadcast(m)
