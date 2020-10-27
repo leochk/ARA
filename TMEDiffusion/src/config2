@@ -1,0 +1,24 @@
+network.size 5
+simulation.endtime 50000
+random.seed 5
+init.i Initialisation
+
+protocol.applicative ApplicativeProtocol
+protocol.broadcast BasicBroadcast
+protocol.transport DeadlyTransport
+protocol.transport2 UniformRandomTransport
+
+protocol.transport2.mindelay 5
+protocol.transport2.maxdelay 500
+protocol.transport.transport transport2
+protocol.transport.drop 0.1
+protocol.transport.faultynodes 3_1
+
+protocol.broadcast.transport transport
+protocol.applicative.broadcast broadcast
+
+
+control.endcontroler EndControler
+control.endcontroler.application applicative
+control.endcontroler.at -1
+control.endcontroler.FINAL

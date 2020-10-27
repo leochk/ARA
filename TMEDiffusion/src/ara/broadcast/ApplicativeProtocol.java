@@ -51,7 +51,7 @@ public class ApplicativeProtocol implements EDProtocol {
 		if (event instanceof ApplicativeMessage) {
 
 			ApplicativeMessage mess = (ApplicativeMessage) event;
-
+			
 			if (mess.isPlus()) {
 				variable += mess.getVal();
 				System.err

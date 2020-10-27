@@ -1,0 +1,133 @@
+1.1
+===
+
+timestamp[i] ne peut être borné à n. Exemple avec 3 processus :
+
+P1 : timestamp[1] = 1
+P2 : timestamp[2] = 2
+P3 : timestamp[3] = 3
+
+P1 entre et sors de la SC et redemande immédiatement son accès sans
+perdre le CPU, ce qui ammène à timestamp[1] = 4 > n.
+
+1.2 
+===
+
+1. Oui, on est sûr que i a choisi un ticket. Pas de concurrence entre i et k
+pour le ticket.
+2. Non, i et k peuvent avoir la même valeur.
+
+1.3
+===
+
+Deux processus peuvent exécuter l'algo du max concurremment avant de retourner
+leurs timestamp. L'algo peut donc retourner la même valeur pour les deux 
+processus. Cela ne pose pas de problème car pour autoriser l'accès à la SC, on 
+compare l'id des processus si leurs timestamps sont égaux.
+
+1.4
+===
+
+3 processus P1, P2, P3.
+
+P2 et P3 executent la fonction max avec timestamp[2] = timestamp[3] = 0.
+P2 timestamp[2] = 1+max() et entre en SC -> Phase 3
+P1 exécute Phase 1 et pert la main après la ligne 5 de max().
+P2 sort de la SC -> timestamp[2] = 0.
+P3 rentre en SC et perd la main sur le CPU.
+P1 timestamp[1] = 1 + max() = 1.
+    Or P1 a le plus petit id de tous les processus. Il entre en SC en même temps
+    que P3.
+
+1.5
+===
+
+max()
+    MAX = 0
+    for j = 1 to N
+        temp = timestamp[j]
+        if (MAX < temp)
+        MAX = temp
+    return MAX
+
+Sauvegarde de la valeur des timestamp et non des indices correspondant.
+
+1.6
+===
+
+R/W r;
+shared read_modify_write ticket = 0;
+shared read_modify valid = 0;
+
+inc(register r)
+    r = (r+1)%n
+
+Entry SC:
+    temp = read_and_modify(ticket, inc)
+    while (temp != valid);
+    
+Exit SC:
+    read_and_modify(valid,inc);
+
+2.1
+===
+
+Sequentiel :
+P2 w(x,1), P1 r(x) = 1, P1 w(y, 2), P3 w(y,4)
+P3 r(x) = 1, P1 r(y) = 4, P2 write(x,3)
+
+2.2
+===
+
+write(x, 1) -> write(x, 3)
+write(x, 1) -> write(y, 2)
+write (x, 3) -> write(y, 4)
+write(x, 1) -> wirte(y, 4) par transitivité
+
+2.3
+===
+
+Non séquentiel : 
+w(y, 2), w(y, 4) ... pas possible pour P3 de lire y=2
+w(y, 4), w(y, 2) ... pas possible pour P2 de lire y=4
+
+Causale, donc aussi PRAM.
+
+2.4
+===
+
+local int x;
+
+operation(op, val)
+    if (op == write)
+        total_order_broadcast(op,id)
+    else
+        return x
+
+upon deeliver msg<write, val, id>
+    x = val
+    if (id = idi)
+        return OK
+
+3.1
+===
+
+bool MRSW registe R' = 0;
+local variable preivous = 0;
+
+boo Write(R, val)
+    if (previous != val)
+        R' = val
+        preivous = R'
+    return OK
+
+boo Read(R)
+    val = R'
+    return val
+
+3.2
+===
+
+Non car la solution rend n'importe quelle valeur du domaine.
+Dans le cas des entiers, il y a trop de valeur possible pour avoir une 
+cohérence.
