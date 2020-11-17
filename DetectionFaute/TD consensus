@@ -1,0 +1,68 @@
+TD consensus
+
+1/
+
+Diffusion fiable:
+    Validité: 1 processus correct p R-Broadcast m, p délivre m
+    Accord: 1 processus correct délivre m, tous les corrects délivrent m.
+    Intégrité: R-deliver au plus 1 fois un message m    
+
+Consensus:
+    Terminaison: Tous les processus correct décident
+    Intégrité: Tout processus décide 1 fois
+    Accord: 2 processus corrects ne peuvent décider différemment
+    Validité: Décision sur une valeur proposée
+
+2/
+
+R-Broadcast(m):
+    Send m to all
+
+Upon reception of m:
+    if (m received first time):
+        if sender(m) !=p:
+            Send m to all
+            R-deliver(m)        
+
+3-5/
+
+voir pdf corrigé
+
+6/
+
+Consensus uniforme :
+    Accord uniforme: 2 processus ne peuvent pas décider différemment
+
+Supposons qu'un processus ait décidé à la ronde r, on va montrer par induction
+que pour tout r' > r la même valeur sera décidée:
+
+    p a décidé à la ligne33 
+    => R-deliver 
+    => R-broadcast (intégrité uniforme) 
+    => c (coordinateur ronde r) a reçu une majorité de ack 
+    => une majorité de processus estimate = estimate_c
+
+Prouver r'=>r estimate_c' = estimate_c
+
+Vrai à la ronde r car c'=c.
+Supposons propriété vraie r <= r' < k, ck = (k mod n) + 1.
+ck propose une nouvelle valeur => il a recu (n+1)/2 estimations.
+Des processus p ont envoyé 1 ack à c avec tsp >= r et tsp >= r et renvoyé
+estimate_p à ck.
+Par hypothèse, estimate_c = estimate_c' pour les coordinateurs qui précède k.
+
+8/
+
+a) un processus correct decide => 1 R-deliver => accord tous les corrects vont
+faire R-Deliver => tous décide
+
+b) blocage dans une ronde impossible :
+    coordinateur : reception d'une majorité d'estimation (majorité correcte et 
+    canaux fiables), reception d'une majorité de ack/nack.
+    autres processus : soit le coordinateur est suspecté => changement de ronde,
+    soit il reçoit un message => changement de ronde
+
+c) il existe une ronde où un coordinateur va accumuler une majorité de ack grâce
+à la justesse de <>S => il existe un processus correct qui n'est à terme plus
+faussement suspecté => plus de nack lorsque ce processus ne sera plus 
+coordinateur.

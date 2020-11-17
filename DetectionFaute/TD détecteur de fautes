@@ -1,0 +1,70 @@
+TD détecteur de fautes
+
+1/
+
+À terme, (<>) retourne aux processus corrects l'id du même processus (le leader
+ultime) 
+
+2/
+
+Upon the invocation of leader()
+    return trusted_i
+
+3/
+
+Sans faute et les messages arrivent à temps => p1 élu
+
+Avec faute et les messages arrivent à temps => processus correct de plus petit
+id
+
+4/
+
+Plusieurs leaders possible si les messages du leader courant arrivent hors 
+délais.
+    => erreur corrigée à la réception du message du leader.
+
+5/
+
+À chaque erreur => augmentation du timeout => il existe un temps, après le GST,
+timeout supérieur à la borne inconnue
+
+6/
+
+À terme, tous les processus précédant pleader sont fautifs (ils n'envoient pas
+de messages). Après GST, il existe un temps après lequel tous les timers vont 
+atteindre la borne inconnues sur les temps de transmisssion => les messages de 
+pleader arrivent à temps => trusted = pleader pour tous les processus corrects.
+
+<>S: À terme, complétude forte => toutes les fautes doivent être détectées 
+(inclus dans Pi), comme trusted n'est pas fautif.
+Justesse finalement faible: à terme, il existe un correct non faussement 
+suspecté.trusted à terme est correct => propriété assurée.
+
+7/
+
+<>P: complétude forte + Justesse finalement forte => à terme plus d'erreurs
+
+Task 2: when (trusted < i) and (did not receive 
+    (I-AM-LEADER, suspected_trusted_i) for p_trusted_i during Delta_i,trusted_i)
+
+    trusted_i++
+    if (trusted_i = i)
+        suspected_i = {p1, ..., pi-1}
+
+Task 3: when (receive(I-AM-LEADER, suspected_j)) and (j <= trusted_i)
+    
+    suspected_i = suspected_j
+    if (j < trusted_i)
+        trusted_i = j
+        Delta_i,j++
+
+Task 4: when (trusted_i = i) and (did not receive I-AM-LIVE from pj during last
+    Delta_i,j)
+
+    suspected_i = suspected_i U {pj}
+
+Task 5: when (trusted_i = i) and (received I-AM-ALIVE from pi) 
+    and (pi in suspected_i)
+
+    suspected_i = suspected_i - {pj}
+    Delta_i,j++
