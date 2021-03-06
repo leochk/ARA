@@ -1,0 +1,20 @@
+network.size 10
+simulation.endtime 200000
+
+init.i InitElectionAndMultiPaxos
+protocol.applicativeE MultiPaxosProtocol
+
+protocol.applicativeE.init_value_0 true
+protocol.applicativeE.minDelay 5
+protocol.applicativeE.maxDelay 500
+protocol.applicativeE.stepDelay 10
+protocol.applicativeE.showLog true
+protocol.applicativeE.probaFauteTransitoire 0
+protocol.applicativeE.probaFauteFranche 0
+protocol.applicativeE.bufferN 1
+protocol.applicativeE.cyclicElection false
+
+control.endcontroler EndMultiPaxosBufferedController
+control.endcontroler.applicationE applicativeE
+control.endcontroler.at -1
+control.endcontroler.FINAL

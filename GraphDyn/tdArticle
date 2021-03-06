@@ -1,0 +1,57 @@
+Exo 1
+=====
+
+1/
+
+Th. 3 (page 8)
+Impossible dans P => Impossible dans R
+
+Preuve par l'absurde/contradiction
+
+Supposons qu'un algo déterministe A existe pour résoudre TDB[foremost], sans
+connaissance de n.
+Si je considère un graph G de R, A résoud TDB[foremost] sur G.
+Il existe donc un temps t_f, où A se termine sur G à t_f.
+
+On considère un Graph G', ou G' est G mais avec un noeud v' en plus, qui 
+apparait après t_f.
+G' est dans R.
+G et G' sont égaux avant t_f => Pour A, les 2 graphes sont indistinguables avant
+t_f, car n inconnu.
+=> A se termine à t_f sur G' comme sur G
+=> v' non informé avant t_f
+=> A incorrect sur G', contradiction
+
+2/
+
+Algo 1 / Th. 8
+Principe
+=> flooding : chaque proc informe chaque voisins dès que possible
+=> remonter des Ack des proc vers la source en utilisant le trajet "aller" dans
+l'autre sens.
+=> initiateur compte les ACK et termine à la reception du (n-1)ème message.
+
+Exo 2
+=====
+
+1/ 
+
+Th. 16
+
+Par contradiction, supposons qu'il existe un algo A de TDB[shortest] dans B
+sans connaitre la borne.
+Prenons un graph non complet G de B à 3 noeud, où A se termine à t_f sur G.
+Il y a donc pas d'arête entre deux noeud u et v. Le broadcast doit alors se 
+faire par l'intermédiaire du 3e noeud w.
+Prenons G', qui est le graph G dans lequel il y a cette arête entre u et v 
+apparaissant après t_f.
+
+G et G' sont alors indistinguables pour A jusqu'à t_f.
+Or il existe un trajet plus court entre u et v dans G' => contradictoire.
+
+2/
+
+Th 14 / Algo 3
+=> Déterminer BFS sur l'empreinte
+=> Diffusion sur BFS
+=> ACK
